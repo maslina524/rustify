@@ -158,7 +158,6 @@ class Tests:
     def test_dbg(self):
         ok = Result.ok("Hello World")
         dbg(ok)
-        assert_eq("", "d")
 
 if __name__ == "__main__":
     Tests()
