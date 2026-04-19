@@ -32,27 +32,27 @@ class Option(Generic[T]):
         return not isinstance(self._inner, Some)
     
     def is_some_and(self, func: Callable[[T], bool]) -> bool:
-        if self.is_some():  # ✅ исправлено
+        if self.is_some():
             return func(self._inner.value)
         return False
     
     def unwrap(self) -> T:
-        if self.is_some():  # ✅ исправлено
+        if self.is_some():
             return self._inner.value
-        raise UnwrapingErr("called `Option::unwrap()` on a `None` value")  # ✅ исправлено
+        raise UnwrapingErr("called `Option::unwrap()` on a `None` value")
     
     def unwrap_or(self, value: T) -> T:
-        if self.is_some():  # ✅ исправлено
+        if self.is_some():
             return self._inner.value
-        return value  # ✅ исправлено
+        return value
     
     def unwrap_or_else(self, func: Callable[[], T]) -> T:
-        if self.is_some():  # ✅ исправлено
+        if self.is_some():
             return self._inner.value
-        return func()  # ✅ исправлено
+        return func()
     
     def expect(self, msg: str) -> T:
-        if self.is_some():  # ✅ исправлено
+        if self.is_some():
             return self._inner.value
         raise Exception(msg)
     
@@ -80,7 +80,7 @@ class Tests:
 
     @test
     def test_is_none(self):
-        none = Option.none()  # ✅ переименовал для ясности
+        none = Option.none()
         assert_eq(none.is_none(), True)
 
     @test
