@@ -23,7 +23,7 @@ def tests(cls):
     ok_counter = 0
     failed_counter = 0
     for name, value in cls.__dict__.items():
-        if callable(value) and not name.startswith('__'):
+        if callable(value) and getattr(value, '_is_test', False):
             methods.append(value)
     
     instance = cls()
@@ -92,6 +92,7 @@ def test(func):
             return func(*args, **kwargs)
         except Exception as e:
             return e
+    wrapper._is_test = True 
     return wrapper
 
 def assert_eq(a, b):
