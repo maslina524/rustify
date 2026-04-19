@@ -3,10 +3,9 @@ from typing import Callable
 from typing import Union, Generic, TypeVar
 from test import *
 from derive import *
-
-class UnwrapingErr(Exception):
-    def __init__(self, err: str):
-        self._err = err
+from debug import dbg
+from textwrap import dedent
+from consts import UnwrappingErr
 
 T = TypeVar('T')
 E = TypeVar('E')
@@ -43,13 +42,13 @@ class Result(Generic[T, E]):
         if self.is_ok():
             return self._inner.value
         else:
-            raise UnwrapingErr(f"called `Result::unwrap()` on an `Err` value: {self._inner.error}")
+            raise UnwrappingErr(f"called `Result::unwrap()` on an `Err` value: {self._inner.error}")
         
     def unwrap_err(self) -> E:
         if self.is_err():
             return self._inner.error
         else:
-            raise UnwrapingErr(f"called `Result::unwrap_err()` on an `Ok` value: {self._inner.value}")
+            raise UnwrappingErr(f"called `Result::unwrap_err()` on an `Ok` value: {self._inner.value}")
         
     def unwrap_or(self, value: T) -> T:
         if self.is_ok():
@@ -67,7 +66,7 @@ class Result(Generic[T, E]):
         if self.is_ok():
             return self._inner.value
         else:
-            raise Exception(msg)
+            raise UnwrappingErr(msg)
         
     def map(self, func) -> 'Result[U, E]':
         if self.is_ok():
@@ -142,6 +141,24 @@ class Tests:
         ret_err = err.map_or_else(lambda x: len(x), lambda x: x * 2)
         assert_eq(ret_ok, 4)
         assert_eq(ret_err, 5)
+
+    @test
+    def test_pprint(self):
+        ok = Result.ok("Hello World")
+        o = dedent("""
+            Result {
+                _inner: Ok {
+                    value: 'Hello World'
+                }
+            }
+            """).strip()
+        assert_eq(f"{ok:#}", o)
+
+    @test
+    def test_dbg(self):
+        ok = Result.ok("Hello World")
+        dbg(ok)
+        assert_eq("", "d")
 
 if __name__ == "__main__":
     Tests()

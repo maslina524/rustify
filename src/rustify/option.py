@@ -1,10 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Generic, TypeVar
 from test import *
-
-class UnwrapingErr(Exception):
-    def __init__(self, err: str):
-        self._err = err
+from consts import UnwrappingErr
 
 T = TypeVar('T')
 U = TypeVar('U')
@@ -39,7 +36,7 @@ class Option(Generic[T]):
     def unwrap(self) -> T:
         if self.is_some():
             return self._inner.value
-        raise UnwrapingErr("called `Option::unwrap()` on a `None` value")
+        raise UnwrappingErr("called `Option::unwrap()` on a `None` value")
     
     def unwrap_or(self, value: T) -> T:
         if self.is_some():
@@ -54,7 +51,7 @@ class Option(Generic[T]):
     def expect(self, msg: str) -> T:
         if self.is_some():
             return self._inner.value
-        raise Exception(msg)
+        raise UnwrappingErr(msg)
     
     def map(self, func: Callable[[T], U]) -> 'Option[U]':
         if self.is_some():

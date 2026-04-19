@@ -4,11 +4,11 @@ from dataclasses import dataclass
 import io
 from contextlib import redirect_stdout
 import time
-import sys
+import traceback
 
 class TestStatus(Enum):
-    Ok = f"\033[32m{"ok"}\033[0m"
-    Failed = f"\033[31m{"FAILED"}\033[0m"
+    Ok = "\033[32mok\033[0m"
+    Failed = "\033[31mFAILED\033[0m"
 
 @dataclass
 class TestInfo:
@@ -45,7 +45,7 @@ def tests(cls):
             status = TestStatus.Failed
 
         elif isinstance(ret, Exception):
-            message = ret
+            message = f"{type(ret).__name__}: {ret}\n{traceback.format_exc()}"
             status = TestStatus.Failed
 
         if status == TestStatus.Ok:
