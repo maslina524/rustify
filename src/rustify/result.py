@@ -78,6 +78,12 @@ class Result(Generic[T, E]):
         else:
             return Result.ok(self._inner.value)
         
+    def map_or(self, default, func) -> T:
+        if self.is_ok():
+            return func(self._inner.value)
+        else:
+            return default
+        
 @tests
 class Tests:
     def divide(self, a, b) -> Result[int, str]:
@@ -109,6 +115,14 @@ class Tests:
         err = Result.err("division by zero")
         ret = err.map_err(lambda x: f"Err: {x}")
         assert_eq(ret.unwrap_err(), "Err: division by zero")
+
+    @test
+    def test_map_or(self):
+        ok = Result.ok(5)
+        err = Result.err(None)
+        ret_ok = ok.map_or(10, lambda x: x * 2)
+        ret_err = err.map_or(10, lambda x: x * 2)
+        assert_eq(ret_ok, ret_err)
 
 if __name__ == "__main__":
     Tests()
