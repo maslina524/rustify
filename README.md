@@ -16,6 +16,7 @@ print(f"Result: {result.unwrap_or("Goodbye, World")}")
 ## What the library adds
 
 - **Result** class (Rust-like error handling)
+- **Option** class
 - **Test system**
 
 ## Installation
