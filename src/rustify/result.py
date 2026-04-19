@@ -8,6 +8,7 @@ class UnwrapingErr(Exception):
 
 T = TypeVar('T')
 E = TypeVar('E')
+U = TypeVar('U')
 
 @dataclass
 class Ok(Generic[T]):
@@ -53,7 +54,7 @@ class Result(Generic[T, E]):
         else:
             return value
 
-    def unwrap_or_else(self, func) -> T:
+    def unwrap_or_else(self, func) -> E:
         if self.is_ok():
             return self._inner.value
         else:
@@ -64,6 +65,18 @@ class Result(Generic[T, E]):
             return self._inner.value
         else:
             raise Exception(error)
+        
+    def map(self, func) -> 'Result[U, E]':
+        if self.is_ok():
+            return Result.ok(func(self._inner.value))
+        else:
+            return Result.err(self._inner.error)
+        
+    def map_err(self, func) -> 'Result[T, U]':
+        if self.is_err():
+            return Result.err(func(self._inner.error))
+        else:
+            return Result.ok(self._inner.value)
         
 @tests
 class Tests:
@@ -84,6 +97,18 @@ class Tests:
         result = self.divide(10, 0)
         assert_eq(result.is_err(), True)
         assert_eq(result.unwrap_err(), "division by zero")
+
+    @test
+    def test_map(self):
+        ok = Result.ok(5)
+        ret = ok.map(lambda x: x * 2)
+        assert_eq(ret.unwrap(), 10)
+
+    @test
+    def test_map_err(self):
+        err = Result.err("division by zero")
+        ret = err.map_err(lambda x: f"Err: {x}")
+        assert_eq(ret.unwrap_err(), "Err: division by zero")
 
 if __name__ == "__main__":
     Tests()
