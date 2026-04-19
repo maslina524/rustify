@@ -72,7 +72,7 @@ def tests(cls):
     else:
         test_status = TestStatus.Ok.value
     end_time = time.perf_counter()
-    print(f"\ntest result: {test_status}. {ok_counter} passed; {failed_counter} failed; finished in {end_time - start_time:.2f}s")
+    print(f"\ntest result: {test_status}. {ok_counter} passed; {failed_counter} failed; finished in {end_time - start_time:.2f}s\n")
 
     return cls
 
@@ -103,6 +103,15 @@ def assert_eq(a, b):
 def assert_ne(a, b):
     if not a != b:
         raise AssertErr(a, b, AssertErrType.NE)
+
+def merge_tests(*classes):
+    def decorator(cls):
+        for base in classes:
+            for name, method in base.__dict__.items():
+                if callable(method) and not name.startswith('__'):
+                    setattr(cls, name, method)
+        return cls
+    return decorator
 
 # running 4 tests
 # test editor::tests::unwrap_test ... FAILED
