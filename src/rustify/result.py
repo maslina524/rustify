@@ -78,11 +78,17 @@ class Result(Generic[T, E]):
         else:
             return Result.ok(self._inner.value)
         
-    def map_or(self, default, func) -> T:
+    def map_or(self, default, func):
         if self.is_ok():
             return func(self._inner.value)
         else:
             return default
+        
+    def map_or_else(self, err_func, ok_func):
+        if self.is_ok():
+            return ok_func(self._inner.value)
+        else:
+            return err_func(self._inner.error)
         
 @tests
 class Tests:
@@ -120,9 +126,19 @@ class Tests:
     def test_map_or(self):
         ok = Result.ok(5)
         err = Result.err(None)
-        ret_ok = ok.map_or(10, lambda x: x * 2)
-        ret_err = err.map_or(10, lambda x: x * 2)
-        assert_eq(ret_ok, ret_err)
+        ret_ok = ok.map_or(0, lambda x: x * 2)
+        ret_err = err.map_or(0, lambda x: x * 2)
+        assert_eq(ret_ok, 10)
+        assert_eq(ret_err, 0)
+
+    @test
+    def test_map_or_else(self):
+        ok = Result.ok(2)
+        err = Result.err("Error")
+        ret_ok = ok.map_or_else(lambda x: len(x), lambda x: x * 2)
+        ret_err = err.map_or_else(lambda x: len(x), lambda x: x * 2)
+        assert_eq(ret_ok, 4)
+        assert_eq(ret_err, 5)
 
 if __name__ == "__main__":
     Tests()
