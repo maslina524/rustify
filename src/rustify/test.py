@@ -4,6 +4,7 @@ from dataclasses import dataclass
 import io
 from contextlib import redirect_stdout
 import time
+import sys
 
 class TestStatus(Enum):
     Ok = f"\033[32m{"ok"}\033[0m"
@@ -27,13 +28,15 @@ def tests(cls):
             methods.append(value)
     
     instance = cls()
+    module_name = cls.__module__
+    class_name = cls.__name__
     print(f"running {len(methods)} tests")
     for method in methods:
         stdout = io.StringIO()
         with redirect_stdout(stdout):
             ret = method(instance)
 
-        name = f"{cls.__name__}::{method.__name__}"
+        name = f"{module_name}::{class_name}::{method.__name__}"
         message = ""
         status = TestStatus.Ok
         
