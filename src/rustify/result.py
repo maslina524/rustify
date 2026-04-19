@@ -61,11 +61,11 @@ class Result(Generic[T, E]):
         else:
             return func(self._inner.error)
 
-    def expect(self, error: str) -> T:
+    def expect(self, msg: str) -> T:
         if self.is_ok():
             return self._inner.value
         else:
-            raise Exception(error)
+            raise Exception(msg)
         
     def map(self, func) -> 'Result[U, E]':
         if self.is_ok():
