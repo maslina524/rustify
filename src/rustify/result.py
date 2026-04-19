@@ -1,5 +1,10 @@
 from dataclasses import dataclass
 from typing import Union, Generic, TypeVar
+from test import *
+
+class UnwrapingErr(Exception):
+    def __init__(self, err: str):
+        self._err = err
 
 T = TypeVar('T')
 E = TypeVar('E')
@@ -34,7 +39,13 @@ class Result(Generic[T, E]):
         if self.is_ok():
             return self._inner.value
         else:
-            raise ValueError(f"called `Result::unwrap()` on an `Err` value: {self._inner.error}")
+            raise UnwrapingErr(f"called `Result::unwrap()` on an `Err` value: {self._inner.error}")
+        
+    def unwrap_err(self) -> T:
+        if self.is_err():
+            return self._inner.error
+        else:
+            raise UnwrapingErr(f"called `Result::unwrap_err()` on an `Ok` value: {self._inner.value}")
         
     def unwrap_or(self, value: T) -> T:
         if self.is_ok():
@@ -52,4 +63,27 @@ class Result(Generic[T, E]):
         if self.is_ok():
             return self._inner.value
         else:
-            raise ValueError(error)
+            raise Exception(error)
+        
+@tests
+class Tests:
+    def divide(self, a, b) -> Result[int, str]:
+        if b == 0:
+            return Result.err("division by zero")
+        else:
+            return Result.ok(a / b)
+        
+    @test
+    def test_ok(self):
+        result = self.divide(10, 2)
+        assert_eq(result.is_ok(), True)
+        assert_eq(result.unwrap(), 5)
+
+    @test
+    def test_err(self):
+        result = self.divide(10, 0)
+        assert_eq(result.is_err(), True)
+        assert_eq(result.unwrap_err(), "division by zero")
+
+if __name__ == "__main__":
+    Tests()
