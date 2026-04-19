@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Callable
 from typing import Union, Generic, TypeVar
 from test import *
 
@@ -42,7 +43,7 @@ class Result(Generic[T, E]):
         else:
             raise UnwrapingErr(f"called `Result::unwrap()` on an `Err` value: {self._inner.error}")
         
-    def unwrap_err(self) -> T:
+    def unwrap_err(self) -> E:
         if self.is_err():
             return self._inner.error
         else:
@@ -54,11 +55,11 @@ class Result(Generic[T, E]):
         else:
             return value
 
-    def unwrap_or_else(self, func) -> E:
+    def unwrap_or_else(self, func: Callable[[E], T]) -> T:
         if self.is_ok():
             return self._inner.value
         else:
-            return func()
+            return func(self._inner.error)
 
     def expect(self, error: str) -> T:
         if self.is_ok():
@@ -78,13 +79,13 @@ class Result(Generic[T, E]):
         else:
             return Result.ok(self._inner.value)
         
-    def map_or(self, default, func):
+    def map_or(self, default: U, func) -> U:
         if self.is_ok():
             return func(self._inner.value)
         else:
             return default
         
-    def map_or_else(self, err_func, ok_func):
+    def map_or_else(self, err_func, ok_func) -> U:
         if self.is_ok():
             return ok_func(self._inner.value)
         else:
