@@ -4,5 +4,6 @@ __version__ = "0.1.0"
 __author__ = "maslina524"
 
 from .result import Result, Ok, Err
+from .test import tests, test, assert_eq
 
 __all__ = ["Result", "Ok", "Err"]
