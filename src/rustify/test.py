@@ -78,6 +78,7 @@ def tests(cls):
 
 class AssertErrType(Enum): 
     EQ = "=="
+    NE = "!="
 
 class AssertErr(Exception):
     def __init__(self, a, b, typ: AssertErrType):
@@ -96,8 +97,12 @@ def test(func):
     return wrapper
 
 def assert_eq(a, b):
-    if a != b:
+    if not a == b:
         raise AssertErr(a, b, AssertErrType.EQ)
+    
+def assert_ne(a, b):
+    if not a != b:
+        raise AssertErr(a, b, AssertErrType.NE)
 
 # running 4 tests
 # test editor::tests::unwrap_test ... FAILED
