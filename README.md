@@ -18,6 +18,7 @@ print(f"Result: {result.unwrap_or("Goodbye, World")}")
 - **Result** class (Rust-like error handling)
 - **Option** class
 - **Test system**
+- **Derive** :: Debug
 
 ## Installation
 
