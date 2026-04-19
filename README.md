@@ -2,7 +2,7 @@
 
 library for truly rust developers
 
-The library adds features of the Rust language to make working with Python more familiar.
+The library brings some features of the Rust language to Python, making the development experience more familiar.
 
 ## Usage
 
@@ -15,16 +15,16 @@ print(f"Result: {result.unwrap_or("Goodbye, World")}")
 
 ## What the library adds
 
-- **Result** class
+- **Result** class (Rust-like error handling)
 
 ## Installation
 
-1. Download library
+1. Clone the repository:
 ```console
 git clone https://github.com/maslina524/rustify
 ```
 
-2. Go to library path
+2. Navigate to the project folder:
 ```console
 cd C:/.../rustify/
 ```
