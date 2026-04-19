@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from typing import Callable
 from typing import Union, Generic, TypeVar
 from test import *
+from derive import *
 
 class UnwrapingErr(Exception):
     def __init__(self, err: str):
@@ -19,6 +20,7 @@ class Ok(Generic[T]):
 class Err(Generic[E]):
     error: E
 
+@derive(Debug)
 class Result(Generic[T, E]):
     def __init__(self, inner: Union[Ok[T], Err[E]]):
         self._inner = inner
