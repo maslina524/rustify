@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Generic, TypeVar
-from test import *
+from test import tests, test, assert_eq
 from consts import UnwrappingErr
 
 T = TypeVar('T')
@@ -68,83 +68,83 @@ class Option(Generic[T]):
             return func()
         return self
 
-@tests
-class Tests:
-    @test
-    def test_is_some(self):
-        some = Option.some("Hello World")
-        assert_eq(some.is_some(), True)
-
-    @test
-    def test_is_none(self):
-        none = Option.none()
-        assert_eq(none.is_none(), True)
-
-    @test
-    def test_is_some_and(self):
-        some = Option.some(5)
-        ret = some.is_some_and(lambda x: x > 3)
-        assert_eq(ret, True)
-
-        none = Option.none()
-        ret = none.is_some_and(lambda x: x > 3)
-        assert_eq(ret, False)
-
-    @test
-    def test_unwrap(self):
-        some = Option.some("Hello World")
-        assert_eq(some.unwrap(), "Hello World")
-
-    @test
-    def test_unwrap_or(self):
-        some = Option.some(5)
-        assert_eq(some.unwrap_or(10), 5)
-        
-        none = Option.none()
-        assert_eq(none.unwrap_or(10), 10)
-
-    @test
-    def test_unwrap_or_else(self):
-        some = Option.some(5)
-        assert_eq(some.unwrap_or_else(lambda: 10), 5)
-        
-        none = Option.none()
-        assert_eq(none.unwrap_or_else(lambda: 10), 10)
-
-    @test
-    def test_map(self):
-        some = Option.some(5)
-        result = some.map(lambda x: x * 2)
-        assert_eq(result.unwrap(), 10)
-        
-        none = Option.none()
-        result = none.map(lambda x: x * 2)
-        assert_eq(result.is_none(), True)
-
-    @test
-    def test_and_then(self):
-        def safe_divide(x: int) -> Option[float]:
-            if x == 0:
-                return Option.none()
-            return Option.some(10 / x)
-        
-        some = Option.some(2)
-        result = some.and_then(safe_divide)
-        assert_eq(result.unwrap(), 5.0)
-        
-        none = Option.none()
-        result = none.and_then(safe_divide)
-        assert_eq(result.is_none(), True)
-
-    @test
-    def test_or_else(self):
-        some = Option.some(5)
-        result = some.or_else(lambda: Option.some(10))
-        assert_eq(result.unwrap(), 5)
-        
-        none = Option.none()
-        result = none.or_else(lambda: Option.some(10))
-        assert_eq(result.unwrap(), 10)
-
 if __name__ == "__main__":
+    @tests
+    class Tests:
+        @test
+        def test_is_some(self):
+            some = Option.some("Hello World")
+            assert_eq(some.is_some(), True)
+
+        @test
+        def test_is_none(self):
+            none = Option.none()
+            assert_eq(none.is_none(), True)
+
+        @test
+        def test_is_some_and(self):
+            some = Option.some(5)
+            ret = some.is_some_and(lambda x: x > 3)
+            assert_eq(ret, True)
+
+            none = Option.none()
+            ret = none.is_some_and(lambda x: x > 3)
+            assert_eq(ret, False)
+
+        @test
+        def test_unwrap(self):
+            some = Option.some("Hello World")
+            assert_eq(some.unwrap(), "Hello World")
+
+        @test
+        def test_unwrap_or(self):
+            some = Option.some(5)
+            assert_eq(some.unwrap_or(10), 5)
+            
+            none = Option.none()
+            assert_eq(none.unwrap_or(10), 10)
+
+        @test
+        def test_unwrap_or_else(self):
+            some = Option.some(5)
+            assert_eq(some.unwrap_or_else(lambda: 10), 5)
+            
+            none = Option.none()
+            assert_eq(none.unwrap_or_else(lambda: 10), 10)
+
+        @test
+        def test_map(self):
+            some = Option.some(5)
+            result = some.map(lambda x: x * 2)
+            assert_eq(result.unwrap(), 10)
+            
+            none = Option.none()
+            result = none.map(lambda x: x * 2)
+            assert_eq(result.is_none(), True)
+
+        @test
+        def test_and_then(self):
+            def safe_divide(x: int) -> Option[float]:
+                if x == 0:
+                    return Option.none()
+                return Option.some(10 / x)
+            
+            some = Option.some(2)
+            result = some.and_then(safe_divide)
+            assert_eq(result.unwrap(), 5.0)
+            
+            none = Option.none()
+            result = none.and_then(safe_divide)
+            assert_eq(result.is_none(), True)
+
+        @test
+        def test_or_else(self):
+            some = Option.some(5)
+            result = some.or_else(lambda: Option.some(10))
+            assert_eq(result.unwrap(), 5)
+            
+            none = Option.none()
+            result = none.or_else(lambda: Option.some(10))
+            assert_eq(result.unwrap(), 10)
+
     Tests()

@@ -2,6 +2,7 @@ from typing import TypeVar
 import inspect
 import os
 from pathlib import Path
+from test import tests, test
 
 T = TypeVar('T')
 
@@ -20,7 +21,7 @@ class Debug:
 
             for i, (k, v) in enumerate(items):
                 formatted_value = Debug._format_value(v, next_indent)
-                comma = ',' if i < len(items) - 1 else ''   # запятая после всех, кроме последнего
+                comma = ',' if i < len(items) - 1 else ''
                 lines.append(f"{indent_str}    {k}: {formatted_value}{comma}")
 
             body = '\n'.join(lines)
@@ -43,7 +44,6 @@ def dbg(any: T):
     line = caller_frame.lineno
     
     if module and module.__file__:
-        # Получаем путь относительно текущей рабочей директории
         try:
             rel_path = os.path.relpath(module.__file__)
             module_name = rel_path.replace('\\', '/').replace('.py', '')
@@ -55,5 +55,16 @@ def dbg(any: T):
     body = f"[{module_name}:{line}] = "
     if getattr(any, '_debug', False):
         print(f"{body}{any:#}")
+    if callable(any):
+        print(f"{body}{any()}")
     else:
         print(f"{body}{any}")
+
+if __name__ == "__main__":
+    @tests
+    class Tests:
+        @test
+        def test_dbg_lambda(self):
+            dbg(lambda: 5 * 2)
+
+    Tests()

@@ -1,9 +1,9 @@
 from dataclasses import dataclass
 from typing import Callable
 from typing import Union, Generic, TypeVar
-from test import *
+from test import tests, test, assert_eq
 from derive import *
-from debug import dbg
+from debug import dbg, Debug
 from textwrap import dedent
 from consts import UnwrappingErr
 
@@ -91,73 +91,73 @@ class Result(Generic[T, E]):
             return ok_func(self._inner.value)
         else:
             return err_func(self._inner.error)
-        
-@tests
-class Tests:
-    def divide(self, a, b) -> Result[int, str]:
-        if b == 0:
-            return Result.err("division by zero")
-        else:
-            return Result.ok(a / b)
-        
-    @test
-    def test_ok(self):
-        result = self.divide(10, 2)
-        assert_eq(result.is_ok(), True)
-        assert_eq(result.unwrap(), 5)
-
-    @test
-    def test_err(self):
-        result = self.divide(10, 0)
-        assert_eq(result.is_err(), True)
-        assert_eq(result.unwrap_err(), "division by zero")
-
-    @test
-    def test_map(self):
-        ok = Result.ok(5)
-        ret = ok.map(lambda x: x * 2)
-        assert_eq(ret.unwrap(), 10)
-
-    @test
-    def test_map_err(self):
-        err = Result.err("division by zero")
-        ret = err.map_err(lambda x: f"Err: {x}")
-        assert_eq(ret.unwrap_err(), "Err: division by zero")
-
-    @test
-    def test_map_or(self):
-        ok = Result.ok(5)
-        err = Result.err(None)
-        ret_ok = ok.map_or(0, lambda x: x * 2)
-        ret_err = err.map_or(0, lambda x: x * 2)
-        assert_eq(ret_ok, 10)
-        assert_eq(ret_err, 0)
-
-    @test
-    def test_map_or_else(self):
-        ok = Result.ok(2)
-        err = Result.err("Error")
-        ret_ok = ok.map_or_else(lambda x: len(x), lambda x: x * 2)
-        ret_err = err.map_or_else(lambda x: len(x), lambda x: x * 2)
-        assert_eq(ret_ok, 4)
-        assert_eq(ret_err, 5)
-
-    @test
-    def test_pprint(self):
-        ok = Result.ok("Hello World")
-        o = dedent("""
-            Result {
-                _inner: Ok {
-                    value: 'Hello World'
-                }
-            }
-            """).strip()
-        assert_eq(f"{ok:#}", o)
-
-    @test
-    def test_dbg(self):
-        ok = Result.ok("Hello World")
-        dbg(ok)
 
 if __name__ == "__main__":
+    @tests
+    class Tests:
+        def divide(self, a, b) -> Result[int, str]:
+            if b == 0:
+                return Result.err("division by zero")
+            else:
+                return Result.ok(a / b)
+            
+        @test
+        def test_ok(self):
+            result = self.divide(10, 2)
+            assert_eq(result.is_ok(), True)
+            assert_eq(result.unwrap(), 5)
+
+        @test
+        def test_err(self):
+            result = self.divide(10, 0)
+            assert_eq(result.is_err(), True)
+            assert_eq(result.unwrap_err(), "division by zero")
+
+        @test
+        def test_map(self):
+            ok = Result.ok(5)
+            ret = ok.map(lambda x: x * 2)
+            assert_eq(ret.unwrap(), 10)
+
+        @test
+        def test_map_err(self):
+            err = Result.err("division by zero")
+            ret = err.map_err(lambda x: f"Err: {x}")
+            assert_eq(ret.unwrap_err(), "Err: division by zero")
+
+        @test
+        def test_map_or(self):
+            ok = Result.ok(5)
+            err = Result.err(None)
+            ret_ok = ok.map_or(0, lambda x: x * 2)
+            ret_err = err.map_or(0, lambda x: x * 2)
+            assert_eq(ret_ok, 10)
+            assert_eq(ret_err, 0)
+
+        @test
+        def test_map_or_else(self):
+            ok = Result.ok(2)
+            err = Result.err("Error")
+            ret_ok = ok.map_or_else(lambda x: len(x), lambda x: x * 2)
+            ret_err = err.map_or_else(lambda x: len(x), lambda x: x * 2)
+            assert_eq(ret_ok, 4)
+            assert_eq(ret_err, 5)
+
+        @test
+        def test_pprint(self):
+            ok = Result.ok("Hello World")
+            o = dedent("""
+                Result {
+                    _inner: Ok {
+                        value: 'Hello World'
+                    }
+                }
+                """).strip()
+            assert_eq(f"{ok:#}", o)
+
+        @test
+        def test_dbg(self):
+            ok = Result.ok("Hello World")
+            dbg(ok)
+
     Tests()
