@@ -106,6 +106,9 @@ def assert_eq(a, b):
 def assert_ne(a, b):
     if not a != b:
         raise AssertErr(a, b, AssertErrType.NE)
+    
+def panic(msg: str):
+    raise Exception(msg)
 
 def merge_tests(*classes):
     def decorator(cls):
