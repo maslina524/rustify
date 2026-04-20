@@ -147,4 +147,29 @@ if __name__ == "__main__":
             result = none.or_else(lambda: Option.some(10))
             assert_eq(result.unwrap(), 10)
 
+        @test
+        def test_doc1(self):
+            some = Option.some("Hello World")
+            none = Option.none()
+
+            print(some.unwrap())                     # Hello World
+            print(none.unwrap_or("Default value"))   # Default value
+
+            # Using map to transform the value
+            result = some.map(lambda s: s.upper())
+            print(result.unwrap())                   # HELLO WORLD
+
+            # Chaining with and_then
+            def safe_divide(x: int) -> Option[float]:
+                if x == 0:
+                    return Option.none()
+                return Option.some(10 / x)
+
+            value = Option.some(2).and_then(safe_divide)
+            print(value.unwrap())                    # 5.0
+
+            # Fallback with or_else
+            value = Option.none().or_else(lambda: Option.some(42))
+            print(value.unwrap())                    # 42
+
     Tests()

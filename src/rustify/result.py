@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from typing import Callable
 from typing import Union, Generic, TypeVar
-from test import tests, test, assert_eq
-from derive import *
+from test import tests, test, assert_eq, panic
+from derive import derive
 from debug import dbg, Debug
 from textwrap import dedent
 from consts import UnwrappingErr
@@ -160,4 +160,11 @@ if __name__ == "__main__":
             ok = Result.ok("Hello World")
             dbg(ok)
 
+        @test
+        def test_doc1(self):
+            ok = Result.ok("Hello World")
+            err = Result.err("I'm a error")
+
+            print(f"{ok.unwrap()}") # Hello World
+            print(f"{err.unwrap_or("Unwrap Err")}") # Unwrap Err
     Tests()
