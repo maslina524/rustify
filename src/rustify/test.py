@@ -1,81 +1,112 @@
 from functools import wraps
 from enum import Enum
 from dataclasses import dataclass
-import io
 from contextlib import redirect_stdout
+import sys
+import inspect
+import os
+from pathlib import Path
+import io
 import time
-import traceback
 
 class TestStatus(Enum):
     Ok = "\033[32mok\033[0m"
     Failed = "\033[31mFAILED\033[0m"
 
 @dataclass
-class TestInfo:
+class TestStruct:
     name: str
-    message: str
+    exception: Exception | None
     stdout: str
-    status: TestStatus
+
+def get_module_name():
+    stack = inspect.stack()
+    caller_frame = stack[2]
+    module = inspect.getmodule(caller_frame.frame)
+    
+    if module and module.__file__:
+        try:
+            rel_path = os.path.relpath(module.__file__)
+            module_name = rel_path.replace('\\', '/').replace('.py', '')
+        except ValueError:
+            module_name = Path(module.__file__).stem
+    else:
+        module_name = module.__name__ if module else "<unknown>"
+    
+    return module_name
 
 def cfg_tests(cls):
-    methods = []
-    errs = []
-    start_time = time.perf_counter()
-    ok_counter = 0
-    failed_counter = 0
-    for name, value in cls.__dict__.items():
-        if callable(value) and getattr(value, '_is_test', False):
-            methods.append(value)
-    
-    instance = cls()
-    module_name = cls.__module__
-    class_name = cls.__name__
-    print(f"running {len(methods)} tests")
-    for method in methods:
-        stdout = io.StringIO()
-        with redirect_stdout(stdout):
-            ret = method(instance)
-
-        name = f"{module_name}::{class_name}::{method.__name__}"
-        message = ""
-        status = TestStatus.Ok
-        
-        if isinstance(ret, AssertErr):
-            message = f"assertion `left {ret.typ.value} right` failed\n  left: {ret.a}\n right: {ret.b}"
-            status = TestStatus.Failed
-
-        elif isinstance(ret, Exception):
-            message = f"{type(ret).__name__}: {ret}\n{traceback.format_exc()}"
-            status = TestStatus.Failed
-
-        if status == TestStatus.Ok:
-            ok_counter += 1
-        else:
-            errs.append(TestInfo(name, message, stdout.getvalue().strip(), status))
-            failed_counter += 1
-
-        print(f"test {name} ... {status.value}")
-    
-    if len(errs) != 0:
-        print("failures:\n")
-        for err in errs:
-            print(f"---- {err.name} ----\n")
-            if err.stdout != "":
-                print(err.stdout, "\n")
-            
-            print(f"test '{err.name}' panicked")
-            print(err.message, "\n")
-
-        print("failures:")
-        for err in errs:
-            print(f"    {err.name}")
-
-    if failed_counter > 0:
-        test_status = TestStatus.Failed.value
+    argv = sys.argv
+    if len(argv) > 1:
+        if argv[1] != "--rustify-test":
+            return cls
     else:
-        test_status = TestStatus.Ok.value
-    end_time = time.perf_counter()
-    print(f"\ntest result: {test_status}. {ok_counter} passed; {failed_counter} failed; finished in {end_time - start_time:.2f}s\n")
+        return cls
+
+    s_time = time.time()
+
+    # Getting all tests
+    all_methods = [name for name, _ in inspect.getmembers(cls, inspect.isfunction)]
+    all_tests = []
+
+    for method_name in all_methods:
+        method = getattr(cls, method_name)
+        if getattr(method, "_is_test", False):
+            all_tests.append(method)
+
+    # Start all tests
+    print(f"running {len(all_tests)} tests")
+
+    failures_list = []
+    base_name = f"{get_module_name()}::{cls.__name__}::"
+    ok_count = 0
+    fail_count = 0
+    for test in all_tests:
+        print(f"test {base_name}{test.__name__} ... ", end="")
+        t_stdout = ""
+        t_exception = None
+
+        f = io.StringIO()
+        with redirect_stdout(f):
+            try:
+                test(cls())
+            except Exception as e:
+                t_exception = e
+
+        t_stdout = f.getvalue()
+
+        if t_exception == None:
+            ok_count += 1
+            print(TestStatus.Ok.value)
+        else:
+            fail_count += 1
+            failures_list.append(TestStruct(test.__name__, t_exception, t_stdout))
+            print(TestStatus.Failed.value)
+
+    # print failures
+    if len(failures_list) > 0:
+        print("\nfailures")
+
+        for failure in failures_list:
+            print(f"\n---- {base_name}{failure.name} ----\n")
+
+            if failure.stdout != "":
+                print(failure.stdout, "\n")
+
+            print(f"test `{base_name}{failure.name}` panicked!")
+            print(f"Exception: {failure.exception}")
+
+        # print num of failures
+        print("\nfailures:")
+        for failure in failures_list:
+            print(f"    {base_name}{failure.name}")
+
+    if fail_count > 0:
+        test_status = TestStatus.Failed
+    else:
+        test_status = TestStatus.Ok
+    e_time = time.time()
+    print(f"\ntest result: {test_status.value}. {ok_count} passed; {fail_count} failed; finished in {(e_time - s_time):.2f}s")
 
     return cls
 
@@ -92,10 +123,7 @@ class AssertErr(Exception):
 def test(func):
     @wraps(func)
     def wrapper(*args, **kwargs):
-        try:
-            return func(*args, **kwargs)
-        except Exception as e:
-            return e
+        return func(*args, **kwargs)
     wrapper._is_test = True 
     return wrapper
 

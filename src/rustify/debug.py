@@ -62,9 +62,9 @@ def dbg(any: T):
 
 if __name__ == "__main__":
     @cfg_tests
-    class Tests:
+    class tests:
         @test
         def test_dbg_lambda(self):
             dbg(lambda: 5 * 2)
 
-    Tests()
+    tests()

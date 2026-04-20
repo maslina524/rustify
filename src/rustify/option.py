@@ -70,7 +70,7 @@ class Option(Generic[T]):
 
 if __name__ == "__main__":
     @cfg_tests
-    class Tests:
+    class tests:
         @test
         def test_is_some(self):
             some = Option.some("Hello World")
@@ -172,4 +172,4 @@ if __name__ == "__main__":
             value = Option.none().or_else(lambda: Option.some(42))
             print(value.unwrap())                    # 42
 
-    Tests()
+    tests()

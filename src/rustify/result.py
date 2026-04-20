@@ -94,7 +94,7 @@ class Result(Generic[T, E]):
 
 if __name__ == "__main__":
     @cfg_tests
-    class Tests:
+    class tests:
         def divide(self, a, b) -> Result[int, str]:
             if b == 0:
                 return Result.err("division by zero")
@@ -167,4 +167,4 @@ if __name__ == "__main__":
 
             print(f"{ok.unwrap()}") # Hello World
             print(f"{err.unwrap_or("Unwrap Err")}") # Unwrap Err
-    Tests()
+    tests()
