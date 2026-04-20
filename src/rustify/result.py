@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable
 from typing import Union, Generic, TypeVar
-from test import tests, test, assert_eq, panic
+from test import cfg_tests, test, assert_eq, panic
 from derive import derive
 from debug import dbg, Debug
 from textwrap import dedent
@@ -93,7 +93,7 @@ class Result(Generic[T, E]):
             return err_func(self._inner.error)
 
 if __name__ == "__main__":
-    @tests
+    @cfg_tests
     class Tests:
         def divide(self, a, b) -> Result[int, str]:
             if b == 0:

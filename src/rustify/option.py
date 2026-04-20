@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Generic, TypeVar
-from test import tests, test, assert_eq
+from test import cfg_tests, test, assert_eq
 from consts import UnwrappingErr
 
 T = TypeVar('T')
@@ -69,7 +69,7 @@ class Option(Generic[T]):
         return self
 
 if __name__ == "__main__":
-    @tests
+    @cfg_tests
     class Tests:
         @test
         def test_is_some(self):

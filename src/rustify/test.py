@@ -17,7 +17,7 @@ class TestInfo:
     stdout: str
     status: TestStatus
 
-def tests(cls):
+def cfg_tests(cls):
     methods = []
     errs = []
     start_time = time.perf_counter()

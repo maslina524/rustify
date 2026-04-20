@@ -5,7 +5,7 @@ __author__ = "maslina524"
 
 from .result import Result, Ok, Err
 from .option import Option, Some
-from .test import test, tests, assert_eq, assert_ne
+from .test import test, cfg_tests, assert_eq, assert_ne
 from .derive import derive
 from .consts import UnwrappingErr
 from .debug import Debug

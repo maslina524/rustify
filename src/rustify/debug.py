@@ -2,7 +2,7 @@ from typing import TypeVar
 import inspect
 import os
 from pathlib import Path
-from test import tests, test
+from test import cfg_tests, test
 
 T = TypeVar('T')
 
@@ -61,7 +61,7 @@ def dbg(any: T):
         print(f"{body}{any}")
 
 if __name__ == "__main__":
-    @tests
+    @cfg_tests
     class Tests:
         @test
         def test_dbg_lambda(self):
