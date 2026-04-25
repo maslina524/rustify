@@ -1,4 +1,4 @@
-import platform
+import platform, sys
 
 class cfg:
     def __init__(self, *args, **kwargs):
@@ -15,6 +15,8 @@ class cfg:
             match k:
                 case "target_os":
                     self._is_work = self._check_os(v)
+                case "target_family":
+                    self._is_work = self._check_family(v)
                 case _:
                     self._is_work = False
     
@@ -32,7 +34,7 @@ class cfg:
         
         return wrapper
     
-    def _check_os(self, os: str):
+    def _check_os(self, os: str) -> bool:
         system = platform.system()
         match os:
             case "windows":
@@ -41,21 +43,33 @@ class cfg:
                 return system == "Linux"
             case "macos":
                 return system == "Darwin"
+    
+    def _check_family(self, famify: str) -> bool:
+        system = platform.system()
+        target_family = ""
+        if system in ("Linux", "Darwin", "FreeBSD", "OpenBSD", "NetBSD"):
+            target_family = "unix"
+        elif system == "Windows":
+            target_family = "windows"
+        elif sys.platform.startswith('emscripten') or 'wasm' in sys.platform:
+            target_family = "wasm"
+
+        return target_family == famify
 
 if __name__ == "__main__":
-    @cfg(target_os = "macos")
+    @cfg(target_family = "unix")
     def test():
-        print("macos")
-        return "macos"
+        print("unix")
+        return "unix"
 
-    @cfg("windows")
+    @cfg(target_family = "windows")
     def test():
         print("windows")
         return "windows"
 
-    @cfg(target_os = "linux")
+    @cfg(target_os = "wasm")
     def test():
-        print("linux")
-        return "linux"
+        print("wasm")
+        return "wasm"
     
     test()
