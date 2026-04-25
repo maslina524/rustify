@@ -14,13 +14,12 @@ print(f"Result: {result.unwrap_or("Goodbye, World")}")
 ```
 
 ## What the library adds
+- Result class — Rust-like error handling
+- Option class — represents an optional value
+- Test system — simple and convenient system
+- Cfg decorator — replacing the `#[cfg(...)]` attribute
 
-- **Result** class (Rust-like error handling)
-- **Option** class
-- **Test system**
-- **Derive** -> **Debug**
-
-check [wiki](https://github.com/maslina524/rustify/wiki)
+Check [wiki](https://github.com/maslina524/rustify/wiki)
 
 ## Installation
 
@@ -34,7 +33,7 @@ git clone https://github.com/maslina524/rustify
 cd C:/.../rustify/
 ```
 
-3. Install the library
+3. Install the library:
 ```console
 pip install .
 ```
