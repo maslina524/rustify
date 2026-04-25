@@ -13,6 +13,17 @@ def all(*args, **kwargs):
     
     return True
 
+def any(*args, **kwargs):
+    for v in args:
+        if  _get_from_arg(v):
+            return True
+
+    for k in list(kwargs.items()):
+        if _get_from_kwarg(k):
+            return True
+    
+    return False
+
 class cfg:
     def __init__(self, *args, **kwargs):
         self._func = None
@@ -106,6 +117,14 @@ if __name__ == "__main__":
     @cfg(all(target_family = "windows", target_os = "windows"))
     def windows_is_unix():
         return False
+    
+    @cfg(any(target_family = "unix", target_os = "windows"))
+    def is_windows_or_unix():
+        return True
+    
+    @cfg(any(target_family = "wasm", target_os = "linux"))
+    def is_windows_or_unix():
+        return False
 
     @cfg_tests
     class tests:
@@ -118,5 +137,9 @@ if __name__ == "__main__":
             assert_eq(get_family(), "windows")
 
         @test
-        def test_windows_is_unix(self):
+        def test_all(self):
             assert_eq(windows_is_unix(), False)
+
+        @test
+        def test_any(self):
+            assert_eq(is_windows_or_unix(), True)
