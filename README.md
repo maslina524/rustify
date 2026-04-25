@@ -24,16 +24,16 @@ Check [wiki](https://github.com/maslina524/rustify/wiki)
 ## Installation
 
 1. Clone the repository:
-```console
+```bash
 git clone https://github.com/maslina524/rustify
 ```
 
 2. Navigate to the project folder:
-```console
+```bash
 cd C:/.../rustify/
 ```
 
 3. Install the library:
-```console
+```bash
 pip install .
 ```
