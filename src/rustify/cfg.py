@@ -4,25 +4,11 @@ from test import cfg_tests, test, assert_eq
 
 def all(*args, **kwargs):
     for v in args:
-        if isinstance(v, str):
-            if not _check_os(v):
-                return False
-                
-        elif isinstance(v, bool):
-            if not v:
-                return False
+        if not _get_from_arg(v):
+            return False
 
-    for k, v in list(kwargs.items()):
-        ret = False
-        match k:
-            case "target_os":
-                ret = _check_os(v)
-            case "target_family":
-                ret = _check_family(v)
-            case _:
-                ret = False
-
-        if not ret:
+    for k in list(kwargs.items()):
+        if not _get_from_kwarg(k):
             return False
     
     return True
@@ -32,21 +18,10 @@ class cfg:
         self._func = None
 
         if len(args) > 0:
-            v = args[0]
-            if isinstance(v, str):
-                self._is_work = self._check_os(v)
-            elif isinstance(v, bool):
-                self._is_work = v
+            self._is_work = _get_from_arg(args[0])
 
         elif len(kwargs) > 0:
-            k, v = list(kwargs.items())[0]
-            match k:
-                case "target_os":
-                    self._is_work = _check_os(v)
-                case "target_family":
-                    self._is_work = _check_family(v)
-                case _:
-                    self._is_work = False
+            self._is_work = _get_from_kwarg(list(kwargs.items())[0])
     
     def __call__(self, func, *args, **kwargs):
         name = func.__name__
@@ -68,7 +43,23 @@ class cfg:
                     return old_func(*args, **kwargs)
         
         return wrapper
-    
+
+def _get_from_arg(a):
+    if isinstance(a, str):
+        return _check_os(a)
+    elif isinstance(a, bool):
+        return a
+
+def _get_from_kwarg(a):
+    k, v = a
+    match k:
+        case "target_os":
+            return _check_os(v)
+        case "target_family":
+            return _check_family(v)
+        case _:
+            return False
+
 def _check_os(os: str) -> bool:
     system = platform.system()
     match os:
