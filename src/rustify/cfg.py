@@ -1,7 +1,20 @@
+import platform
+
+class windows:
+    def __new__(cls):
+        return platform.system() == "Windows"
+    
+class linux:
+    def __new__(cls):
+        return platform.system() == "Linux"
+    
+class macos:
+    def __new__(cls):
+        return platform.system() == "Darwin"
+
 class cfg:
-    def __init__(self, *args, **kwargs):
-        self.args = args
-        self.kwargs = kwargs
+    def __init__(self, is_work: bool = False):
+        self.is_work = is_work
         self.func = None
         self.skip = False
     
@@ -11,7 +24,7 @@ class cfg:
         old_func = globals().get(name)
 
         def wrapper(*args, **kwargs):
-            if not self.skip:
+            if self.is_work:
                 return self.func(*args, **kwargs)
             else:
                 if old_func is not None:
@@ -19,15 +32,15 @@ class cfg:
         
         return wrapper
 
-@cfg()
+@cfg(macos())
 def test():
-    return "unix"
+    return "macos"
 
-@cfg()
+@cfg(windows())
 def test():
     return "windows"
 
-@cfg()
+@cfg(linux())
 def test():
     return "linux"
 
