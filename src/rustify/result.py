@@ -2,8 +2,7 @@ from dataclasses import dataclass
 from typing import Callable
 from typing import Union, Generic, TypeVar
 from test import cfg_tests, test, assert_eq, panic
-from derive import derive
-from debug import dbg, Debug
+from debug import dbg
 from textwrap import dedent
 from consts import UnwrappingErr
 
@@ -19,7 +18,6 @@ class Ok(Generic[T]):
 class Err(Generic[E]):
     error: E
 
-@derive(Debug)
 class Result(Generic[T, E]):
     def __init__(self, inner: Union[Ok[T], Err[E]]):
         self._inner = inner
@@ -142,18 +140,6 @@ if __name__ == "__main__":
             ret_err = err.map_or_else(lambda x: len(x), lambda x: x * 2)
             assert_eq(ret_ok, 4)
             assert_eq(ret_err, 5)
-
-        @test
-        def test_pprint(self):
-            ok = Result.ok("Hello World")
-            o = dedent("""
-                Result {
-                    _inner: Ok {
-                        value: 'Hello World'
-                    }
-                }
-                """).strip()
-            assert_eq(f"{ok:#}", o)
 
         @test
         def test_dbg(self):

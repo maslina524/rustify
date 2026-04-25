@@ -5,37 +5,6 @@ from pathlib import Path
 from test import cfg_tests, test
 
 T = TypeVar('T')
-
-class Debug:
-    @staticmethod
-    def format(obj, f, indent=0):
-        if f == "":
-            attrs = ', '.join(f"{k}: {v!r}" for k, v in obj.__dict__.items())
-            return f"{obj.__class__.__name__} {{ {attrs} }}"
-
-        elif f == "#":
-            indent_str = ' ' * (indent * 4)
-            next_indent = indent + 1
-            items = list(obj.__dict__.items())
-            lines = []
-
-            for i, (k, v) in enumerate(items):
-                formatted_value = Debug._format_value(v, next_indent)
-                comma = ',' if i < len(items) - 1 else ''
-                lines.append(f"{indent_str}    {k}: {formatted_value}{comma}")
-
-            body = '\n'.join(lines)
-            return f"{obj.__class__.__name__} {{\n{body}\n{indent_str}}}"
-
-    @staticmethod
-    def _format_value(val, indent):
-        if isinstance(val, (type(None), str, int, float, bool, list, dict, tuple, set)):
-            return repr(val)
-
-        if hasattr(val, '__dict__'):
-            return Debug.format(val, "#", indent)
-
-        return repr(val)
     
 def dbg(any: T):
     stack = inspect.stack()
@@ -66,5 +35,3 @@ if __name__ == "__main__":
         @test
         def test_dbg_lambda(self):
             dbg(lambda: 5 * 2)
-
-    tests()
