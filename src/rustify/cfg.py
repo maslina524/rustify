@@ -2,6 +2,31 @@ import inspect
 import platform, sys
 from test import cfg_tests, test, assert_eq
 
+def all(*args, **kwargs):
+    for v in args:
+        if isinstance(v, str):
+            if not _check_os(v):
+                return False
+                
+        elif isinstance(v, bool):
+            if not v:
+                return False
+
+    for k, v in list(kwargs.items()):
+        ret = False
+        match k:
+            case "target_os":
+                ret = _check_os(v)
+            case "target_family":
+                ret = _check_family(v)
+            case _:
+                ret = False
+
+        if not ret:
+            return False
+    
+    return True
+
 class cfg:
     def __init__(self, *args, **kwargs):
         self._func = None
@@ -10,15 +35,16 @@ class cfg:
             v = args[0]
             if isinstance(v, str):
                 self._is_work = self._check_os(v)
-                
-            self._is_work = v
+            elif isinstance(v, bool):
+                self._is_work = v
+
         elif len(kwargs) > 0:
             k, v = list(kwargs.items())[0]
             match k:
                 case "target_os":
-                    self._is_work = self._check_os(v)
+                    self._is_work = _check_os(v)
                 case "target_family":
-                    self._is_work = self._check_family(v)
+                    self._is_work = _check_family(v)
                 case _:
                     self._is_work = False
     
@@ -43,27 +69,27 @@ class cfg:
         
         return wrapper
     
-    def _check_os(self, os: str) -> bool:
-        system = platform.system()
-        match os:
-            case "windows":
-                return system == "Windows"
-            case "linux":
-                return system == "Linux"
-            case "macos":
-                return system == "Darwin"
-    
-    def _check_family(self, famify: str) -> bool:
-        system = platform.system()
-        target_family = ""
-        if system in ("Linux", "Darwin", "FreeBSD", "OpenBSD", "NetBSD"):
-            target_family = "unix"
-        elif system == "Windows":
-            target_family = "windows"
-        elif sys.platform.startswith('emscripten') or 'wasm' in sys.platform:
-            target_family = "wasm"
+def _check_os(os: str) -> bool:
+    system = platform.system()
+    match os:
+        case "windows":
+            return system == "Windows"
+        case "linux":
+            return system == "Linux"
+        case "macos":
+            return system == "Darwin"
 
-        return target_family == famify
+def _check_family(famify: str) -> bool:
+    system = platform.system()
+    target_family = ""
+    if system in ("Linux", "Darwin", "FreeBSD", "OpenBSD", "NetBSD"):
+        target_family = "unix"
+    elif system == "Windows":
+        target_family = "windows"
+    elif sys.platform.startswith('emscripten') or 'wasm' in sys.platform:
+        target_family = "wasm"
+
+    return target_family == famify
 
 if __name__ == "__main__":
     @cfg(target_os = "windows")
@@ -82,6 +108,14 @@ if __name__ == "__main__":
     def get_family():
         return "linux"
     
+    @cfg(all(target_family = "unix", target_os = "windows"))
+    def windows_is_unix():
+        return True
+    
+    @cfg(all(target_family = "windows", target_os = "windows"))
+    def windows_is_unix():
+        return False
+
     @cfg_tests
     class tests:
         @test
@@ -91,3 +125,7 @@ if __name__ == "__main__":
         @test
         def test_target_family(self):
             assert_eq(get_family(), "windows")
+
+        @test
+        def test_windows_is_unix(self):
+            assert_eq(windows_is_unix(), False)
