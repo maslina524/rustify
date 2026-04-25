@@ -1,4 +1,6 @@
+import inspect
 import platform, sys
+from test import cfg_tests, test, assert_eq
 
 class cfg:
     def __init__(self, *args, **kwargs):
@@ -21,9 +23,16 @@ class cfg:
                     self._is_work = False
     
     def __call__(self, func, *args, **kwargs):
-        self._func = func
         name = func.__name__
-        old_func = globals().get(name)
+        self._func = func
+
+        frame = inspect.currentframe().f_back
+        class_obj = frame.f_locals.get('self')
+        
+        if class_obj is not None:
+            old_func = getattr(class_obj, name, None)
+        else:
+            old_func = globals().get(name)
 
         def wrapper(*args, **kwargs):
             if self._is_work:
@@ -57,19 +66,28 @@ class cfg:
         return target_family == famify
 
 if __name__ == "__main__":
-    @cfg(target_family = "unix")
-    def test():
-        print("unix")
-        return "unix"
-
-    @cfg(target_family = "windows")
-    def test():
-        print("windows")
+    @cfg(target_os = "windows")
+    def get_os_name():
         return "windows"
-
-    @cfg(target_os = "wasm")
-    def test():
-        print("wasm")
-        return "wasm"
+        
+    @cfg(target_os = "linux")
+    def get_os_name():
+        return "linux"
     
-    test()
+    @cfg(target_family = "windows")
+    def get_family():
+        return "windows"
+        
+    @cfg(target_family = "unix")
+    def get_family():
+        return "linux"
+    
+    @cfg_tests
+    class tests:
+        @test
+        def test_target_os(self):
+            assert_eq(get_os_name(), "windows")
+
+        @test
+        def test_target_family(self):
+            assert_eq(get_family(), "windows")
