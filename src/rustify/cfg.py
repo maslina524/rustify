@@ -1,23 +1,15 @@
 import platform
 
-class windows:
-    def __new__(cls):
-        return platform.system() == "Windows"
-    
-class linux:
-    def __new__(cls):
-        return platform.system() == "Linux"
-    
-class macos:
-    def __new__(cls):
-        return platform.system() == "Darwin"
-
 class cfg:
     def __init__(self, *args, **kwargs):
         self._func = None
 
         if len(args) > 0:
-            self._is_work = args[0]
+            v = args[0]
+            if isinstance(v, str):
+                self._is_work = self._check_os(v)
+                
+            self._is_work = v
         elif len(kwargs) > 0:
             k, v = list(kwargs.items())[0]
             match k:
@@ -56,7 +48,7 @@ if __name__ == "__main__":
         print("macos")
         return "macos"
 
-    @cfg(windows())
+    @cfg("windows")
     def test():
         print("windows")
         return "windows"
