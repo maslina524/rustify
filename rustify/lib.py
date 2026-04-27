@@ -1,4 +1,4 @@
-def main_func(func):
+def start(func):
     func()
     def wrapper(*args, **kwargs):
         return func(*args, **kwargs)
@@ -15,7 +15,7 @@ def deprecated(since: str = "", note: str = ""):
 
             if since != "":
                 print(f"deprecated since version {since}")
-                
+
             return func(*args, **kwargs)
         return wrapper
     return decorator
