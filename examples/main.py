@@ -1,5 +1,5 @@
-from rustify import Result, assert_eq
+from rustify import main_func
 
-ok = Result.ok(5)
-ret = ok.map(lambda x: x * 2)
-assert_eq(ret.unwrap(), 10)
+@main_func
+def main():
+    print("Hello World!")

@@ -9,3 +9,4 @@ from .test import test, cfg_tests, assert_eq, assert_ne
 from .consts import UnwrappingErr
 from .debug import dbg
 from .cfg import cfg, all, any
+from .main_func import main_func
