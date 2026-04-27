@@ -171,5 +171,3 @@ if __name__ == "__main__":
             # Fallback with or_else
             value = Option.none().or_else(lambda: Option.some(42))
             print(value.unwrap())                    # 42
-
-    tests()

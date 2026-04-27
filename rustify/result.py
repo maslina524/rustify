@@ -153,4 +153,3 @@ if __name__ == "__main__":
 
             print(f"{ok.unwrap()}") # Hello World
             print(f"{err.unwrap_or("Unwrap Err")}") # Unwrap Err
-    tests()
