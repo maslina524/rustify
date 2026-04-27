@@ -1,6 +1,6 @@
 import inspect
 import platform, sys
-from test import cfg_tests, test, assert_eq
+from .test import cfg_tests, test, assert_eq
 
 def all(*args, **kwargs):
     for v in args:

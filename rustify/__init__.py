@@ -7,5 +7,5 @@ from .result import Result, Ok, Err
 from .option import Option, Some
 from .test import test, cfg_tests, assert_eq, assert_ne
 from .consts import UnwrappingErr
-from .debug import Debug
+from .debug import dbg
 from .cfg import cfg, all, any

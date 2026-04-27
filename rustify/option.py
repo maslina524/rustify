@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import Callable, Optional, Generic, TypeVar
-from test import cfg_tests, test, assert_eq
-from consts import UnwrappingErr
+from .test import cfg_tests, test, assert_eq
+from .consts import UnwrappingErr
 
 T = TypeVar('T')
 U = TypeVar('U')

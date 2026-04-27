@@ -2,7 +2,7 @@ from typing import TypeVar
 import inspect
 import os
 from pathlib import Path
-from test import cfg_tests, test
+from .test import cfg_tests, test
 
 T = TypeVar('T')
     

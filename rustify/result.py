@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from typing import Callable
 from typing import Union, Generic, TypeVar
-from test import cfg_tests, test, assert_eq, panic
-from debug import dbg
-from textwrap import dedent
-from consts import UnwrappingErr
+from .test import cfg_tests, test, assert_eq
+from .debug import dbg
+from .consts import UnwrappingErr
 
 T = TypeVar('T')
 E = TypeVar('E')
