@@ -10,3 +10,5 @@ from .consts import UnwrappingErr
 from .std.dbg import dbg
 from .cfg import cfg, all, any
 from .lib import start, deprecated
+
+from .error_handler import rust_error_handler

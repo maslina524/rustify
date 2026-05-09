@@ -1,8 +1,7 @@
-from rustify.std.dbg import dbg
+import rustify
 
 def main():
-    x = 5
-    dbg(x)
+    raise Exception("Hello World")
 
 if __name__ == "__main__":
     main()
