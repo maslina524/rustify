@@ -1,16 +1,27 @@
-from pathlib import Path
+import os
 import sys
 
-def get_module_name(frame) -> str:
-    work_dir = Path.cwd().parts
-    file_dir = Path(frame.f_code.co_filename).parts
-    i = 0
-    while i < len(work_dir) and i < len(file_dir) and work_dir[i] == file_dir[i]:
-        i += 1
+# def get_module_name(frame) -> str:
+#     work_dir = Path.cwd().parts
+#     file_dir = Path(frame.f_code.co_filename).parts
+#     i = 0
+#     while i < len(work_dir) and i < len(file_dir) and work_dir[i] == file_dir[i]:
+#         i += 1
     
-    ret = file_dir[i:]
+#     ret = file_dir[i:]
 
-    return "/".join(ret)
+#     return "/".join(ret)
+
+def get_module_name(frame):
+    # Сначала пробуем стандартное имя модуля
+    module_name = frame.f_globals.get('__name__')
+    if module_name != '__main__':
+        return module_name
+    
+    filename = frame.f_code.co_filename
+    base = os.path.basename(filename)
+    
+    return base
 
 # thread 'main' (5400) panicked at src\main.rs:2:13:
 # attempt to divide by zero
