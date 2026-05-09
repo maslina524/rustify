@@ -3,7 +3,6 @@ from typing import Callable
 from typing import Union, Generic, TypeVar
 from ..test import cfg_tests, test, assert_eq
 from ..std.dbg import dbg
-from ..consts import UnwrappingErr
 
 T = TypeVar('T')
 E = TypeVar('E')
@@ -39,13 +38,13 @@ class Result(Generic[T, E]):
         if self.is_ok():
             return self._inner.value
         else:
-            raise UnwrappingErr(f"called `Result::unwrap()` on an `Err` value: {self._inner.error}")
+            raise Exception(f"called `Result::unwrap()` on an `Err` value: {self._inner.error}")
         
     def unwrap_err(self) -> E:
         if self.is_err():
             return self._inner.error
         else:
-            raise UnwrappingErr(f"called `Result::unwrap_err()` on an `Ok` value: {self._inner.value}")
+            raise Exception(f"called `Result::unwrap_err()` on an `Ok` value: {self._inner.value}")
         
     def unwrap_or(self, value: T) -> T:
         if self.is_ok():
@@ -63,7 +62,7 @@ class Result(Generic[T, E]):
         if self.is_ok():
             return self._inner.value
         else:
-            raise UnwrappingErr(msg)
+            raise Exception(msg)
         
     def map(self, func) -> 'Result[U, E]':
         if self.is_ok():
